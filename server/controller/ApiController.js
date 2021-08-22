@@ -10,30 +10,42 @@ class ApiController {
     const salt = genSaltSync(10);
 
     try {
-      await Users.create({
-        name,
-        email,
-        password,
-        salt,
-        birthdate,
-        gender,
-        avatar: file ? file.name : "https://via.placeholder.com/150",
-        type,
+      const emailDuplicate = await Users.findOne({
+        where: { email: email },
       });
-      res.status(201).json({
-        message: "Account Added",
-      });
+
+      if (emailDuplicate) {
+        res.status(409).json({
+          msg: "email already exist",
+        });
+      } else {
+        await Users.create({
+          name,
+          email,
+          password,
+          salt,
+          birthdate,
+          gender,
+          avatar: file ? file.name : "https://via.placeholder.com/150",
+          type,
+        });
+
+        res.status(201).json({
+          status: 201,
+          message: "Account Added",
+        });
+      }
     } catch (err) {
       res.status(500).json(err);
     }
   }
 
   static async login(req, res) {
-    const { email, password } = req.body;
     try {
+      const { email, password } = req.body;
       let user = await Users.findOne({
         where: {
-          email: email,
+          email,
         },
       });
 
@@ -41,7 +53,8 @@ class ApiController {
         let userPassword = user.password;
         let isMatch = decrypter(password, userPassword);
         if (isMatch) {
-          let access_token = tokenGenerator(user);
+          // console.log(user);
+          const access_token = tokenGenerator(user.dataValues);
           res.status(200).json({
             status: 200,
             message: "Login Successful",

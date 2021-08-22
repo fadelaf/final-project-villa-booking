@@ -1,4 +1,4 @@
-const { tokenVerifier } = require("../helpers/jwt");
+const { tokenVerifier } = require("../../helper/jwt");
 
 const userAuthentication = (req, res, next) => {
   const { access_token } = req.headers;
