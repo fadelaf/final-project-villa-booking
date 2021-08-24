@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       Villas.belongsTo(models.Users);
       Villas.hasMany(models.Villas_images);
+      Villas.hasMany(models.Villas_comments);
     }
   }
   Villas.init(
@@ -24,13 +25,13 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       description: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         validate: {
           len: [1, 101],
         },
       },
       address: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         allowNull: false,
         validate: {
           notNull: { msg: "address cannot be null" },
@@ -86,16 +87,16 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
 
-      UsersId: {
+      UserId: {
         type: DataTypes.INTEGER,
       },
     },
     {
       hooks: {
         beforeCreate(villa, options) {
-          villa.bedrooms = 1;
-          villa.bathrooms = 1;
-          villa.floor = 1;
+          // villa.bedrooms = 1;
+          // villa.bathrooms = 1;
+          // villa.floor = 1;
           villa.type = "Standard";
         },
       },

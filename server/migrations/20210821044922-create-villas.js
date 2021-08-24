@@ -12,10 +12,10 @@ module.exports = {
         type: Sequelize.STRING,
       },
       description: {
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT,
       },
       address: {
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT,
       },
       type: {
         type: Sequelize.STRING,
@@ -35,7 +35,7 @@ module.exports = {
       price: {
         type: Sequelize.NUMERIC,
       },
-      UsersId: {
+      UserId: {
         type: Sequelize.INTEGER,
       },
       createdAt: {

@@ -6,7 +6,7 @@ const userAuthentication = (req, res, next) => {
   try {
     if (access_token) {
       const decoded = tokenVerifier(access_token);
-      req.UserData = decoded;
+      req.userData = decoded;
       next();
     } else {
       throw {

@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       Users.hasMany(models.Villas);
+      Users.hasMany(models.Villas_comments);
     }
   }
   Users.init(
@@ -73,7 +74,6 @@ module.exports = (sequelize, DataTypes) => {
         validate: {
           notNull: { msg: "gender cannot be null" },
           notEmpty: { msg: "gender cannot be empty" },
-          is: "admin" || "user",
         },
       },
     },
@@ -88,6 +88,9 @@ module.exports = (sequelize, DataTypes) => {
             user.type = "user";
           }
         },
+        // beforeUpdate(user, options) {
+        //   user.password = encrypter(user.password, user.salt);
+        // },
       },
       sequelize,
       modelName: "Users",

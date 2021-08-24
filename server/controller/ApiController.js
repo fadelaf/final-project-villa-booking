@@ -1,6 +1,6 @@
 const { genSaltSync } = require("bcrypt");
 const { decrypter } = require("../helper/bcrypt");
-const { Users } = require("../models");
+const { Users, Villas, Villas_comments } = require("../models");
 const { tokenGenerator, tokenVerifier } = require("../helper/jwt");
 
 class ApiController {
@@ -73,6 +73,62 @@ class ApiController {
           message: "User not found",
         };
       }
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  }
+
+  static async updateProfile(req, res) {
+    try {
+      const userId = req.userData.id;
+      const type = req.userData.type;
+      const file = req.files;
+      let { name, email, password } = req.body;
+      const salt = genSaltSync(10);
+      // console.log(password);
+      // console.log(password);
+      let hashPassword = encrypter(password, salt);
+      // console.log(x);
+      // console.log(userId);
+      await Users.update(
+        {
+          name,
+          email,
+          password: hashPassword,
+          avatar: file ? file.name : "https://via.placeholder.com/150",
+        },
+        {
+          where: {
+            id: userId,
+            type: type,
+          },
+        }
+      );
+      // console.log(updateAdmin);
+      res.status(200).json({
+        status: 200,
+        msg: "Updated",
+      });
+    } catch (err) {
+      res.json(err);
+    }
+  }
+
+  static async addComment(req, res) {
+    try {
+      const UserId = req.userData.id;
+      const VillaId = +req.params.id;
+      const { comments, rating } = req.body;
+      let userComment = await Villas_comments.create({
+        UserId,
+        VillaId,
+        comments,
+        rating,
+      });
+      res.status(200).json({
+        status: 200,
+        userComment,
+      });
     } catch (err) {
       res.status(500).json(err);
     }

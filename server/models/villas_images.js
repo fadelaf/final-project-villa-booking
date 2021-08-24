@@ -18,9 +18,14 @@ module.exports = (sequelize, DataTypes) => {
       filesize: DataTypes.STRING,
       filetype: DataTypes.STRING,
       primary: DataTypes.BOOLEAN,
-      VillasId: DataTypes.INTEGER,
+      VillaId: DataTypes.INTEGER,
     },
     {
+      // hooks: {
+      //   beforeCreate(image, options) {
+      //     // image.filename = "https://via.placeholder.com/150";
+      //   },
+      // },
       sequelize,
       modelName: "Villas_images",
     }
