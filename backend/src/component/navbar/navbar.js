@@ -24,7 +24,7 @@ function Navbar({ userLogin }) {
     });
   };
   return (
-    <div className="flex justify-around">
+    <div className="flex justify-around shadow-lg">
       <div className="p-2">VillaIn</div>
       <div>
         <ul className="inline-flex justify-around">
@@ -34,8 +34,13 @@ function Navbar({ userLogin }) {
           <div className="p-2 mr-2">
             <Link to="/profile">Profile</Link>
           </div>
-          <div className="p-2 mr-2">My Villa</div>
-          <div className="p-2 mr-2">Add Villa</div>
+          <div className="p-2 mr-2">
+            {" "}
+            <Link to="/myVilla">My Villa</Link>
+          </div>
+          <div className="p-2 mr-2">
+            <Link to="/addVilla">Add Villa</Link>
+          </div>
         </ul>
       </div>
       <div className="p-2">

@@ -23,3 +23,10 @@ code {
 .height-500px {
   height: 500px;
 }
+
+.upload-pp input[type="file"] {
+  /* display: none; */
+  width: 100px;
+  /* border-radius: 10px; */
+  /* border: black solid 1px; */
+}

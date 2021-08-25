@@ -4,6 +4,7 @@ import "./App.css";
 import { BrowserRouter, Switch, Route, useParams } from "react-router-dom";
 import { Register, Login, AdminSection, Home } from "./page";
 import { useState, useEffect } from "react";
+import { NavbarBeforeLogin } from "./component";
 
 function App() {
   const [login, setLogin] = useState(false);
@@ -33,15 +34,14 @@ function App() {
         <AdminSection login={login} userLogin={userLogin} />
       ) : (
         <Switch>
-          <Route exact path="/" component={Home} />
-          <Route exact path="/register" component={Register}></Route>
-          <Route exact path="/login" component={Login}>
-            <Login
+          <Route exact path="/" component={Home}>
+            <Home
               userLogin={userLogin}
               getToken={getToken}
               getUser={getUser}
-            />
+            ></Home>
           </Route>
+          <Route exact path="/register" component={Register}></Route>
         </Switch>
       )}
     </BrowserRouter>
