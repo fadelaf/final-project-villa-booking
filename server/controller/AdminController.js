@@ -10,7 +10,12 @@ class AdminController {
         where: {
           UserId: adminId,
         },
-        include: Villas_images,
+        include: {
+          model: Villas_images,
+          where: {
+            primary: true,
+          },
+        },
       });
 
       res.status(200).json({
@@ -29,6 +34,7 @@ class AdminController {
 
       let detailVilla = await Villas.findOne({
         where: { UserId: adminId, id: id },
+        include: Villas_images,
       });
       res.status(200).json({ status: 200, detailVilla });
     } catch (err) {
@@ -38,7 +44,7 @@ class AdminController {
 
   static async addVillas(req, res) {
     try {
-      const file = req.files;
+      const files = req.files;
       const adminId = req.userData.id;
       const {
         title,
@@ -54,6 +60,7 @@ class AdminController {
       // console.log(file.length);
       // console.log(adminId);
       // console.log(bedrooms);
+      console.log(files);
 
       let newVilla = await Villas.create({
         title,
@@ -67,15 +74,12 @@ class AdminController {
         price,
         UserId: adminId,
       });
-
-      for (let i = 0; i < file.length; i++) {
-        const filename = file[i]
-          ? file[i].filename
-          : "https://via.placeholder.com/150";
-        const filesize = file[i] ? file[i].size : "22kb";
-        const filetype = file[i] ? file[i].mimetype : ".png";
-        const primary = i === 0 ? true : false;
-        // console.log(filename);
+      console.log(files.length);
+      if (files.length == 0) {
+        const filename = "https://via.placeholder.com/150";
+        const filesize = "22kb";
+        const filetype = ".jpeg";
+        const primary = true;
 
         await Villas_images.create({
           VillaId: newVilla.id,
@@ -84,6 +88,24 @@ class AdminController {
           filetype,
           primary,
         });
+      } else {
+        for (let i = 0; i < files.length; i++) {
+          const filename = files[i]
+            ? files[i].filename
+            : "https://via.placeholder.com/150";
+          const filesize = files[i] ? files[i].size : "22kb";
+          const filetype = files[i] ? files[i].mimetype.split("/")[1] : ".png";
+          const primary = i === 0 ? true : false;
+          // console.log(filename);
+
+          await Villas_images.create({
+            VillaId: newVilla.id,
+            filename,
+            filesize,
+            filetype,
+            primary,
+          });
+        }
       }
 
       let newVillaData = await Villas.findAll({
@@ -141,26 +163,89 @@ class AdminController {
   }
 
   static async updateVilla(req, res) {
-    const adminId = req.userData.id;
-    const { id } = +req.params.id;
-    const {
-      title,
-      description,
-      address,
-      type,
-      bedrooms,
-      bathrooms,
-      floor,
-      facility,
-      price,
-    } = req.body;
+    try {
+      const adminId = req.userData.id;
+      const id = +req.params.id;
+      const {
+        title,
+        description,
+        address,
+        type,
+        bedrooms,
+        bathrooms,
+        floor,
+        facility,
+        price,
+      } = req.body;
+      // console.log(description);
+      let update = await Villas.update(
+        {
+          title,
+          description,
+          address,
+          type,
+          bedrooms,
+          bathrooms,
+          floor,
+          facility,
+          price,
+        },
+        {
+          where: { UserId: adminId, id: id },
+        }
+      );
+
+      let newUpdate = await Villas.findOne({
+        where: { UserId: adminId, id: id },
+      });
+
+      res.status(200).json({
+        status: 200,
+        newUpdate,
+      });
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  }
+
+  static async deleteVilla(req, res) {
+    // let admin = await Villas.findOne({
+    //   where: { id: adminId },
+    // });
+
+    try {
+      const adminId = req.userData.id;
+      const { id } = req.body;
+
+      let villa = await Villas.findOne({
+        where: { id },
+      });
+
+      await Villas.destroy({
+        where: { id: villa.id, UserId: adminId },
+      });
+
+      await Villas_images.destroy({
+        where: { VillaId: villa.id },
+      });
+
+      await Villas_comments.destroy({
+        where: { VillaId: villa.id },
+      });
+
+      res.json({
+        msg: "Villa is deleted",
+      });
+    } catch (err) {
+      res.json(err);
+    }
   }
 
   static async updateProfile(req, res) {
     try {
       const userId = req.userData.id;
       const type = req.userData.type;
-      const file = req.files;
+      const file = req.file;
       let { name, email, password } = req.body;
       const salt = genSaltSync(10);
       // console.log(password);
@@ -168,12 +253,22 @@ class AdminController {
       let hashPassword = encrypter(password, salt);
       // console.log(x);
       // console.log(userId);
+
+      console.log(file);
+
+      const admin = await Users.findOne({
+        where: {
+          id: userId,
+          type: type,
+        },
+      });
       await Users.update(
         {
           name,
           email,
           password: hashPassword,
-          avatar: file ? file.name : "https://via.placeholder.com/150",
+          salt: salt,
+          avatar: file ? file.filename : admin.avatar,
         },
         {
           individualHooks: true,
@@ -183,10 +278,12 @@ class AdminController {
           },
         }
       );
-      // console.log(updateAdmin);
+
+      let newUpdate = await Users.findOne({ where: { id: userId } });
       res.status(200).json({
         status: 200,
         msg: "Updated",
+        newUpdate,
       });
     } catch (err) {
       res.json(err);
