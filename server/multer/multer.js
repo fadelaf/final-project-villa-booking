@@ -55,7 +55,7 @@ const multiplePhotos = () => {
     storage: storage,
   });
 
-  return upload.array("file", 10);
+  return upload.array("file", 4);
 };
 
 module.exports = {

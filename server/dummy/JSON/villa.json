@@ -1,0 +1,67 @@
+[
+  {
+    "id": 1,
+    "title": "Villa bunga",
+    "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+    "address": "ciwidey",
+    "type": "Standard",
+    "bedrooms": 1,
+    "bathrooms": 1,
+    "floor": 1,
+    "facility": "wifi",
+    "price": 200000,
+    "UserId": 1
+  },
+  {
+    "id": 2,
+    "title": "Villa bunga",
+    "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+    "address": "ciwidey",
+    "type": "Standard",
+    "bedrooms": 1,
+    "bathrooms": 1,
+    "floor": 1,
+    "facility": "wifi",
+    "price": 200000,
+    "UserId": 1
+  },
+  {
+    "id": 3,
+    "title": "Villa bunga",
+    "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+    "address": "ciwidey",
+    "type": "Standard",
+    "bedrooms": 1,
+    "bathrooms": 1,
+    "floor": 1,
+    "facility": "wifi",
+    "price": 200000,
+    "UserId": 1
+  },
+  {
+    "id": 4,
+    "title": "Villa bunga",
+    "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+    "address": "ciwidey",
+    "type": "Standard",
+    "bedrooms": 1,
+    "bathrooms": 1,
+    "floor": 1,
+    "facility": "wifi",
+    "price": 200000,
+    "UserId": 1
+  },
+  {
+    "id": 5,
+    "title": "Villa bunga",
+    "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+    "address": "ciwidey",
+    "type": "Standard",
+    "bedrooms": 1,
+    "bathrooms": 1,
+    "floor": 1,
+    "facility": "wifi",
+    "price": 200000,
+    "UserId": 1
+  }
+]

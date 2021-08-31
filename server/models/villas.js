@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
       Villas.belongsTo(models.Users);
       Villas.hasMany(models.Villas_images);
       Villas.hasMany(models.Villas_comments);
+      Villas.hasMany(models.LineItem);
     }
   }
   Villas.init(
@@ -27,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
       description: {
         type: DataTypes.TEXT,
         validate: {
-          len: [1, 101],
+          // len: [1, 101],
         },
       },
       address: {

@@ -1,0 +1,20 @@
+[
+  {
+    "name": "fadel",
+    "email": "admin@gmail.com",
+    "password": "admin",
+    "gender": "male",
+    "birthdate": "2021-08-12",
+    "avatar": "blank.png",
+    "type": "admin"
+  },
+  {
+    "name": "fadel",
+    "email": "fadel@gmail.com",
+    "password": "fadel",
+    "gender": "male",
+    "birthdate": "2021-08-12",
+    "avatar": "blank.png",
+    "type": "user"
+  }
+]

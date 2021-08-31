@@ -254,7 +254,7 @@ class AdminController {
       // console.log(x);
       // console.log(userId);
 
-      console.log(file);
+      // console.log(file);
 
       const admin = await Users.findOne({
         where: {

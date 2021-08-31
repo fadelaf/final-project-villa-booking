@@ -6,12 +6,19 @@ const userAuthentication = (req, res, next) => {
   try {
     if (access_token) {
       const decoded = tokenVerifier(access_token);
-      req.userData = decoded;
-      next();
+      if (decoded.type === "user") {
+        req.userData = decoded;
+        next();
+      } else {
+        throw {
+          status: 403,
+          message: "Not Authorized",
+        };
+      }
     } else {
       throw {
         status: 404,
-        message: "Token not Found",
+        message: "Token not found",
       };
     }
   } catch (err) {
