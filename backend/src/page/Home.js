@@ -5,7 +5,7 @@ function Home({ userLogin, getToken, getUser }) {
   return (
     <div>
       <NavbarBeforeLogin />
-      <div className="w-full h-10 bg-gray-00">Bar</div>
+      <div className="w-full h-10 "></div>
       <div className=" flex justify-end w-full  bg-red-200">
         <div className="mr-56">
           <LoginForm

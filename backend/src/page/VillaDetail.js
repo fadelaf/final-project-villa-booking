@@ -102,18 +102,10 @@ function VillaDetail() {
                 src="https://images.unsplash.com/photo-1593642532744-d377ab507dc8?ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80"
                 alt=""
               />
-              <div>
-                {/* {file.map((item) => {
-                  console.log(item);
-                  return (
-                    <span>
-                      <img
-                        src={`http://localhost:3000/images/villas/${item.filename}}`}
-                        alt=""
-                      />
-                    </span>
-                  );
-                })} */}
+              <div className="flex flex-row">
+                {file.map((item) => {
+                  return <div className="w-28 h-24 bg-black border-2 "></div>;
+                })}
               </div>
             </div>
             <div class="col-span-2 p-10">
