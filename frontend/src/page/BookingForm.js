@@ -7,7 +7,7 @@ import { bookSummary } from "../API";
 import Handler from "../component/button/Handler";
 import { addOrder } from "../API";
 import { useHistory } from "react-router";
-import NumberFormat from "react-number-format";
+import * as NumberFormat from "react-number-format";
 
 function BookingForm() {
   const access_token = localStorage.access_token;

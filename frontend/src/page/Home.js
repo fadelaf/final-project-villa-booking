@@ -42,8 +42,8 @@ function Home({ login }) {
 
       if (data.status === 200) {
         setIsLoading(false);
-        setVillaData(data.get);
-        setTotalPage(data.totalPage);
+        setVillaData(data?.get);
+        setTotalPage(data?.totalPage);
       }
 
       // console.log(data);

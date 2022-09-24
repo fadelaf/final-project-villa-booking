@@ -11,7 +11,7 @@ import HotelIcon from "@material-ui/icons/Hotel";
 import BathtubIcon from "@material-ui/icons/Bathtub";
 import { CircularProgress } from "@mui/material";
 // or
-import NumberFormat from "react-number-format";
+import * as NumberFormat from "react-number-format";
 
 function BookingList() {
   const [orderList, setList] = useState([]);

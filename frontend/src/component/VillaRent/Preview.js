@@ -7,7 +7,7 @@ import HotelIcon from "@material-ui/icons/Hotel";
 import BathtubIcon from "@material-ui/icons/Bathtub";
 import Rating from "@material-ui/lab/Rating";
 import Box from "@material-ui/core/Box";
-import NumberFormat from "react-number-format";
+import * as NumberFormat from "react-number-format";
 
 function Preview({
   login,
