@@ -7,11 +7,16 @@ route.post("/register", singlePhoto(), ApiController.register);
 route.post("/login", ApiController.login);
 route.post("/add-cart", userAuthentication, ApiController.addToCart);
 route.post("/payment", userAuthentication, ApiController.Payment);
-route.get("/villa/:page?", ApiController.getVilla);
+route.get("/villa/:name?/:page?/:price?", ApiController.getVilla);
 route.get("/detail/:id", ApiController.getVillaDetail);
 route.get("/show-cart", userAuthentication, ApiController.showCart);
 route.get("/order/:cartId", userAuthentication, ApiController.bookSummary);
 route.get("/show-list", userAuthentication, ApiController.showList);
+route.get(
+  "/show-order-review/:orderId",
+  userAuthentication,
+  ApiController.showOrderForReview
+);
 route.put(
   "/update",
   userAuthentication,

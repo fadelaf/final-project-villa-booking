@@ -1,4 +1,11 @@
-const { Users, Villas, Villas_images } = require("../models");
+const {
+  Users,
+  Villas,
+  Villas_images,
+  Orders,
+  Villas_comments,
+  LineItem,
+} = require("../models");
 const { encrypter } = require("../helper/bcrypt");
 const { genSaltSync } = require("bcrypt");
 
@@ -35,7 +42,9 @@ class AdminController {
       let detailVilla = await Villas.findOne({
         where: { UserId: adminId, id: id },
         include: Villas_images,
+        order: [[Villas_images, "id", "ASC"]],
       });
+
       res.status(200).json({ status: 200, detailVilla });
     } catch (err) {
       res.status(500).json(err);
@@ -74,7 +83,7 @@ class AdminController {
         price,
         UserId: adminId,
       });
-      console.log(files.length);
+      // console.log(files.length);
       if (files.length == 0) {
         const filename = "https://via.placeholder.com/150";
         const filesize = "22kb";
@@ -123,37 +132,6 @@ class AdminController {
         ...err,
       });
     }
-
-    // .then((product) => {
-    //   for (let i = 0; i < 10; i++) {
-    //     const fileName = files[i]
-    //       ? files[i].filename
-    //       : "https://via.placeholder.com/150";
-    //     const fileSize = files[i] ? files[i].size : "22kb";
-    //     const fileType = files[i] ? files[i].mimetype : ".png";
-    //     const primary = i === 0 ? true : false;
-
-    //     Villas_images.create({
-    //       ProductId: product.id,
-    //       fileName,
-    //       fileSize,
-    //       fileType,
-    //       primary,
-    //     });
-    //   }
-    //   res.status(201).json({
-    //     status: 201,
-    //     message: "New Villa is added",
-    //     product,
-    //   });
-    // })
-    // .catch((err) => {
-    //   res.status(500).json({
-    //     status: 500,
-    //     msg: "error",
-    //     ...err,
-    //   });
-    // });
   }
 
   static photo(req, res) {
@@ -290,6 +268,124 @@ class AdminController {
     }
   }
 
+  static async addImage(req, res) {
+    try {
+      const UserId = req.userData.id;
+      const VillaId = +req.params.villaId;
+      const files = req.files;
+
+      // console.log(files);
+
+      for (let i = 0; i < files.length; i++) {
+        const filename = files[i] ? files[i].filename : "";
+        const filesize = files[i] ? files[i].size : "";
+        const filetype = files[i] ? files[i].mimetype.split("/")[1] : "";
+        const primary = false;
+        // console.log(filename);
+
+        let img = await Villas_images.create({
+          VillaId: VillaId,
+          filename,
+          filesize,
+          filetype,
+          primary,
+        });
+
+        res.status(200).json({
+          status: 200,
+        });
+      }
+    } catch (err) {
+      res.json(err);
+    }
+  }
+
+  static async setAsPrimary(req, res) {
+    try {
+      const UserId = req.userData.id;
+      const VillaId = +req.params.villaId;
+      const { target } = req.body;
+
+      let primary = await Villas_images.findOne({
+        where: { primary: true, VillaId: VillaId },
+      });
+
+      let idPrimary = primary.id;
+
+      let primaryFalse = await Villas_images.update(
+        {
+          primary: false,
+        },
+        {
+          where: { id: idPrimary, VillaId: VillaId },
+        }
+      );
+
+      let primaryTrue = await Villas_images.update(
+        {
+          primary: true,
+        },
+        {
+          where: { id: target, VillaId: VillaId },
+        }
+      );
+
+      res.json({
+        status: 200,
+        msg: "updated",
+      });
+    } catch (err) {
+      res.json(err);
+    }
+  }
+
+  static async deleteImage(req, res) {
+    try {
+      const adminId = req.userData.id;
+      const VillaId = +req.params.villaId;
+      const target = +req.params.imgId;
+      let imgAll = await Villas_images.findAll({ where: { VillaId: VillaId } });
+      console.log(imgAll.length);
+      if (imgAll.length === 1) {
+        res.status(500).json({
+          status: 500,
+          msg: "Can't delete image if only have one",
+          del,
+        });
+      } else {
+        let img = await Villas_images.findOne({ where: { id: target } });
+        if (img.primary === true) {
+          const del = await Villas_images.destroy({
+            where: { id: target, VillaId: VillaId },
+          });
+
+          const imgToSetPrimary = await Villas_images.findOne({
+            where: { VillaId: VillaId },
+          });
+
+          const update = await Villas_images.update(
+            {
+              primary: true,
+            },
+            { where: { id: imgToSetPrimary.id } }
+          );
+        } else {
+          const del = await Villas_images.destroy({
+            where: { id: target, VillaId: VillaId },
+          });
+        }
+
+        res.status(200).json({
+          status: 200,
+          msg: "delete success",
+          del,
+        });
+      }
+    } catch (err) {
+      res.json(err);
+    }
+  }
+
   static async villaComment(req, res) {
     try {
       const adminId = req.userData.id;
@@ -301,6 +397,68 @@ class AdminController {
       res.status(200).json(comment);
     } catch (err) {
       res.status(500).json(err);
+    }
+  }
+
+  static async dashboardData(req, res) {
+    try {
+      const adminId = req.userData.id;
+
+      let findVilla = await Villas.findAll({
+        where: { UserId: adminId },
+        include: { model: LineItem, include: { model: Orders } },
+      });
+
+      let lines = [];
+
+      findVilla.forEach((item) => {
+        lines.push(item.LineItems);
+      });
+
+      let orders = [];
+
+      lines.forEach((item) => {
+        item.forEach((order) => {
+          // res.status(200).json(order.Order);
+          orders.push(order.Order);
+        });
+      });
+      // let orders = await Orders.findAll({
+      //   where: { id: { [Op.in]: orderId } },
+      // });
+
+      let total_booking = orders.length;
+      let complete_booking = 0;
+      orders.forEach((item) => {
+        if ((item.status = "paid")) {
+          complete_booking += 1;
+        }
+      });
+
+      let total_income = 0;
+
+      orders.forEach((item) => {
+        if (item.status === "paid") {
+          total_income += +item.total_due;
+        }
+      });
+
+      let total_cancel = 0;
+      orders.forEach((item) => {
+        if (item.status === "cancelled") {
+          total_cancel += 1;
+        }
+      });
+
+      res.status(200).json({
+        total_booking,
+        complete_booking,
+        total_income,
+        total_cancel,
+        orders,
+      });
+    } catch (err) {
+      res.json(err);
     }
   }
 }

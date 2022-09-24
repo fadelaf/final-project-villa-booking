@@ -98,7 +98,7 @@ class ApiController {
       const salt = genSaltSync(10);
       let hashPassword = encrypter(password, salt);
 
-      console.log(userId);
+      // console.log(userId);
 
       const user = await Users.findOne({
         where: {
@@ -134,28 +134,64 @@ class ApiController {
     }
   }
   static async getVilla(req, res) {
-    let { page } = req.params;
-    let { limit, sort } = req.body;
-    if (!page) page = 1;
-    if (!limit) limit = 3;
-
-    // console.log(page);
-
     try {
-      const totalProduct = await Villas.findAll();
+      let { page, name, price } = req.params;
+      // let { name, type } = req.body;
+      // console.log(name);
+      if (!name) name = " ";
+      if (!page) page = 1;
+
+      let limit_price = price;
+      const limit = 3;
+
+      const totalProduct = await Villas.findAll({
+        where: {
+          [Op.or]: [
+            { title: { [Op.iLike]: "%" + name + "%" } },
+            { address: { [Op.iLike]: "%" + name + "%" } },
+          ],
+        },
+      });
+
+      // const totalProduct = await Villas.findAll({
+      //   where: {
+      //     title: { [Op.iLike]: "%" + name + "%" },
+      //   },
+      // });
+
+      // console.log(totalProduct);
+
       const totalPage = Math.ceil(totalProduct.length / limit);
       const offset = (page - 1) * limit;
 
       let get = await Villas.findAll({
-        offset,
         limit,
-        include: Villas_images,
+        offset,
+        include: [
+          { model: Villas_images, where: { primary: true } },
+          { model: Villas_comments },
+        ],
+        where: {
+          [Op.and]: [
+            {
+              [Op.or]: [
+                { title: { [Op.iLike]: "%" + name + "%" } },
+                { address: { [Op.iLike]: "%" + name + "%" } },
+              ],
+            },
+            { price: { [Op.between]: [100000, limit_price] } },
+          ],
+        },
       });
+
+      // console.log(get);
       res.status(200).json({
-        totalProduct: totalProduct.length,
+        totalProduct,
+        length: totalProduct.length,
         limit,
         totalPage,
         get,
+        status: 200,
       });
     } catch (err) {
       res.json(err);
@@ -164,35 +200,18 @@ class ApiController {
 
   static async getVillaDetail(req, res) {
     try {
-      const { id } = req.params;
+      const id = +req.params.id;
 
       let getDetail = await Villas.findOne({
+        where: { id: id },
         include: [
           { model: Users, attributes: ["name", "avatar"] },
           { model: Villas_images, attributes: ["filename", "primary"] },
+          { model: Villas_comments, attributes: ["comments", "rating"] },
         ],
       });
 
       res.status(200).json(getDetail);
-    } catch (err) {
-      res.status(500).json(err);
-    }
-  }
-  static async addComment(req, res) {
-    try {
-      const UserId = req.userData.id;
-      const VillaId = +req.params.id;
-      const { comments, rating } = req.body;
-      let userComment = await Villas_comments.create({
-        UserId,
-        VillaId,
-        comments,
-        rating,
-      });
-      res.status(200).json({
-        status: 200,
-        userComment,
-      });
     } catch (err) {
       res.status(500).json(err);
     }
@@ -254,6 +273,14 @@ class ApiController {
             include: [
               {
                 model: Villas,
+                include: [
+                  {
+                    model: Villas_images,
+                    where: {
+                      primary: true,
+                    },
+                  },
+                ],
               },
             ],
           },
@@ -429,7 +456,12 @@ class ApiController {
             where: {
               [Op.or]: [{ status: "checkout" }, { status: "ordered" }],
             },
-            include: { model: Villas },
+            include: [
+              {
+                model: Villas,
+                include: [{ model: Villas_images, where: { primary: true } }],
+              },
+            ],
           },
         ],
       });
@@ -500,7 +532,9 @@ class ApiController {
           }
         );
 
-        let OrderId = order.id;
+        let OrderId = findOrder.id;
+
+        console.log(OrderId);
 
         let line = await LineItem.update(
           {
@@ -512,6 +546,7 @@ class ApiController {
         );
 
         res.status(200).json({
+          status: 200,
           msg: "Payment Success",
         });
       } else {
@@ -521,6 +556,62 @@ class ApiController {
       }
     } catch (err) {
       res.json(err);
+    }
+  }
+
+  static async showOrderForReview(req, res) {
+    try {
+      const UserId = req.userData.id;
+      const id = +req.params.orderId;
+
+      let order = await Orders.findOne({
+        where: { UserId: UserId, id, status: "paid" },
+        include: [
+          {
+            model: LineItem,
+            include: {
+              model: Villas,
+              include: { model: Villas_images, where: { primary: true } },
+            },
+          },
+        ],
+      });
+
+      const line = order.LineItems[0];
+      const villa = line.Villa;
+
+      // order;
+
+      res.json({
+        status: 200,
+        order,
+        line,
+        villa,
+      });
+    } catch (err) {
+      res.json(err);
+    }
+  }
+
+  static async addComment(req, res) {
+    try {
+      const UserId = req.userData.id;
+      const VillaId = +req.params.id;
+      const { comments, rating } = req.body;
+
+      console.log(comments);
+
+      let userComment = await Villas_comments.create({
+        UserId,
+        VillaId,
+        comments,
+        rating,
+      });
+      res.status(200).json({
+        status: 200,
+      });
+    } catch (err) {
+      res.status(500).json(err);
     }
   }
 }
