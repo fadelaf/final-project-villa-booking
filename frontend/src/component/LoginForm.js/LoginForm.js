@@ -1,7 +1,49 @@
 import React from "react";
 import Handler from "../button/Handler";
+import { useState } from "react";
+import { useHistory } from "react-router";
+import { login } from "../../API";
+import Swal from "sweetalert2";
+import { useEffect } from "react";
 
-function LoginForm({ handler }) {
+function LoginForm({ handler, userLogin, getToken, getUser }) {
+  const [loginData, setLoginData] = useState({
+    email: "",
+    password: "",
+    type: "user",
+  });
+
+  const history = useHistory();
+
+  const loginHandler = async (e) => {
+    e.preventDefault();
+
+    let data = await login(loginData);
+    console.log(data);
+    if (data.status === 200) {
+      userLogin(true);
+      getToken(data.access_token);
+      getUser(data.user);
+      Swal.fire({
+        icon: "success",
+        title: "Login Success",
+      });
+
+      // // console.log(data.user);
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "User not Found/Invalid Password",
+      });
+    }
+
+    // console.log(data);
+  };
+
+  useEffect(() => {}, []);
+  // console.log(loginData);
+
   return (
     <div className="">
       {" "}
@@ -24,6 +66,9 @@ function LoginForm({ handler }) {
                 class="w-full mt-2 mb-6 px-4 py-2 border rounded-lg text-gray-700 
             border-gray-500
             focus:outline-none focus:border-green-500"
+                onChange={(e) => {
+                  setLoginData({ ...loginData, email: e.target.value });
+                }}
               />
             </div>
           </div>
@@ -39,14 +84,19 @@ function LoginForm({ handler }) {
              focus:outline-none focus:border-green-500
              border-gray-500"
                 placeholder="insert password"
+                autoComplete="current-password"
+                onChange={(e) => {
+                  setLoginData({ ...loginData, password: e.target.value });
+                }}
               />
             </div>
           </div>
           <div class="flex justify-center mb-2 p-2">
-            <a className="ml-2 bg-green-400 hover:bg-green-500 text-white font-bold py-1 px-5 rounded-full">
+            {/* <button className="ml-2 bg-green-400 hover:bg-green-500 text-white font-bold py-1 px-5 rounded-full">
               {" "}
               Login
-            </a>
+            </button> */}
+            <Handler desc={"Login"} handler={loginHandler} />
           </div>
         </div>
       </form>

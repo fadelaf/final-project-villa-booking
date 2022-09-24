@@ -48,15 +48,15 @@ function Register() {
   };
   return (
     <>
-      <div className="container-lg items-center h-screen w-full flex justify-center content-center">
+      <div className="container-lg items-center h-screen w-full flex justify-center content-center bg-cover-photo">
         <form action="" className="text-left my-2">
-          <div class="bg-red-200 rounded-md p-2 px-4 mb-2 flex flex-col">
+          <div class="bg-gray-200 rounded-md p-2 px-4 mb-2 flex flex-col">
             <div class="container mb-2 pd-2">
               <label class="block pb-3" for="name">
                 Name{" "}
               </label>
               <input
-                className="form-input"
+                className="form-input p-1"
                 type="text"
                 id="name"
                 onChange={(e) =>
@@ -65,10 +65,11 @@ function Register() {
               />
             </div>
             <div class="container mb-2 pd-2">
-              <label class="block pb-3 " for="email">
+              <label class="block pb-3" for="email">
                 Email{" "}
               </label>
               <input
+                className="p-1"
                 type="email"
                 id="email"
                 onChange={(e) =>
@@ -81,6 +82,7 @@ function Register() {
                 Password
               </label>
               <input
+                className="p-1"
                 type="Password"
                 id="password"
                 onChange={(e) =>
@@ -93,6 +95,7 @@ function Register() {
                 Birthdate
               </label>
               <input
+                className="p-1"
                 type="date"
                 id="birthdate"
                 onChange={(e) =>
@@ -121,7 +124,13 @@ function Register() {
               <label class="block pb-3 " for="type">
                 Type
               </label>
-              <input type="text" id="type" value="admin" readOnly />
+              <input
+                className="p-1"
+                type="text"
+                id="type"
+                value="user"
+                readOnly
+              />
             </div>
             <div class="flex justify-center mt-4 pd-2">
               <Handler handler={submitHandler} desc={"Submit"} />
